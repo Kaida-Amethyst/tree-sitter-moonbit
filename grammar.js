@@ -317,10 +317,10 @@ module.exports = grammar({
       token.immediate(/\\o[0-7]{1,3}/),
       // hex
       token.immediate(/\\x[0-9a-fA-F]{1,2}/),
-      token.immediate(/\\x{[0-9a-fA-F]+}/),
+      token.immediate(/\\x[0-9a-fA-F]{1,6}/),
       // unicode
       token.immediate(/\\u[0-9a-fA-F]{4}/),
-      token.immediate(/\\u{[0-9a-fA-F]+}/),
+      token.immediate(/\\u[0-9a-fA-F]{1,6}/),
     ),
 
     multiline_string_separator: _ => /#\|/,
@@ -510,10 +510,20 @@ module.exports = grammar({
     case_clause_body: $ => choice(
       $.assign_expression,
       $.while_expression,
-      seq('break', commaList($.expression)),
-      seq('continue', commaList($.expression)),
+      $.break_expression,
+      $.continue_expression,
       $.return_expression,
       $.expression,
+    ),
+
+    break_expression: $ => seq(
+      'break',
+      commaList($.expression)
+    ),
+
+    continue_expression: $ => seq(
+      'continue',
+      commaList($.expression)
     ),
 
     if_expression: $ => seq(
@@ -538,8 +548,8 @@ module.exports = grammar({
       $.named_lambda_expression,
       $.named_matrix_expression,
       $.while_expression,
-      seq('break', commaList($.expression)),
-      seq('continue', commaList($.expression)),
+      $.break_expression,
+      $.continue_expression,
       $.return_expression,
       $.expression
     ),
